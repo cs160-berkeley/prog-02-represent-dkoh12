@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.example.david.twob.VoteView"
+                tools:deviceIds="wear_round">
+
+    <TextView
+        android:id="@+id/presidential_vote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="2012 Presidential Vote"/>
+
+    <TextView
+        android:id="@+id/state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/presidential_vote"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="30dp"
+        android:text="CA"/>
+
+    <TextView
+        android:id="@+id/county"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/state"
+        android:layout_marginLeft="30dp"
+        android:text="San Francisco County"/>
+
+    <TableLayout
+        android:id="@+id/election"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/county"
+        android:layout_marginTop="20dp"
+        android:stretchColumns="1">
+
+        <TableRow
+            android:layout_gravity="center"
+            android:layout_marginLeft="40dp"
+            >
+
+            <TextView
+                android:text="Obama"/>
+
+            <TextView
+                android:layout_marginLeft="5dp"
+                android:text="52%"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_gravity="center"
+            android:layout_marginLeft="40dp">
+
+            <TextView
+                android:text="Romney"/>
+
+            <TextView
+                android:layout_marginLeft="5dp"
+                android:text="48%"/>
+
+        </TableRow>
+
+    </TableLayout>
+
+
+</RelativeLayout>
