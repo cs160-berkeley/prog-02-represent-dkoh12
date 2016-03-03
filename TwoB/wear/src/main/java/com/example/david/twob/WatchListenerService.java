@@ -14,29 +14,19 @@ import java.nio.charset.StandardCharsets;
 
 public class WatchListenerService extends WearableListenerService {
     private static final String TAG = "@>@>@>@>";
-    private static final String party = "/party";
+    private static final String party = "/zipCode";
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
         Log.d(TAG, "in WatchListenerService, got: " + messageEvent.getPath());
 
         if( messageEvent.getPath().equalsIgnoreCase(party) ) {
-            String value = new String(messageEvent.getData(), StandardCharsets.UTF_8);
-
-            String arr[] = value.split(" ");
-            String politicianName = arr[0];
-            String politicianParty = arr[1];
+            String zipCode = new String(messageEvent.getData(), StandardCharsets.UTF_8);
 
             Intent intent = new Intent(this, MainWearActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-            intent.putExtra("POLITICIAN_NAME", politicianName);
-
-            if(politicianParty.equals("Republican")) {
-                intent.putExtra("POLITICIAN_PARTY", "Republican");
-            } else {
-                intent.putExtra("POLITICIAN_PARTY", "Democrat");
-            }
+            intent.putExtra("zipCode", zipCode);
 
             startActivity(intent);
         } else {

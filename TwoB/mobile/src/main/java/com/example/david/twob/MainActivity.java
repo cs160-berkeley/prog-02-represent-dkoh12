@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,6 +14,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +26,9 @@ public class MainActivity extends AppCompatActivity {
     private EditText mZipCode;
     private CheckBox mCurrentLocation;
     private String zipCode;
+    private Boolean check = Boolean.FALSE;
+
+//    public static ArrayList<Candidate> sCandidates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,16 +36,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mZipCode = (EditText) findViewById(R.id.EnterZipCode);
-        zipCode = mZipCode.getText().toString();
-
         mCurrentLocation = (CheckBox) findViewById(R.id.checkBox);
 
         mCurrentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (((CheckBox) v).isChecked()) {
+                    check = Boolean.TRUE;
                     zipCode = "94704";
                     Toast.makeText(MainActivity.this, "Set current location", Toast.LENGTH_SHORT).show();
+                } else {
+                    zipCode = "";
+                    check = Boolean.FALSE;
                 }
             }
         });
@@ -48,11 +57,20 @@ public class MainActivity extends AppCompatActivity {
         mEnterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startCongress();
-                startWatch();
+                if (!check)
+                    zipCode = mZipCode.getText().toString();
+
+                if (zipCode.length() != 5) {
+                    Log.d(TAG, "zipCode: " + zipCode);
+                    Toast.makeText(MainActivity.this, "Not a valid ZipCode", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d(TAG, "start");
+                    startCongress();
+                    startWatch();
+                }
+                Log.d(TAG, "end");
             }
         });
-
     }
 
     private void startCongress() {
@@ -63,12 +81,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void startWatch() {
         Intent sendIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
-        //sendIntent.putExtra("zipCode", zipCode);
-        sendIntent.putExtra("POLITICIAN_NAME", "BOB");
-        sendIntent.putExtra("POLITICIAN_PARTY", "Republican");
+        sendIntent.putExtra("zipCode", zipCode);
         startService(sendIntent);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

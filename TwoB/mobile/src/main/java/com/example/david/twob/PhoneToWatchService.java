@@ -48,14 +48,13 @@ public class PhoneToWatchService extends Service {
 
         Log.d(TAG, "on start command");
 
-        final String politicianName = extras.getString("POLITICIAN_NAME");
-        final String politicianParty = extras.getString("POLITICIAN_PARTY");
+        final String zipCode = extras.getString("zipCode");
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 mApiClient.connect();
-                sendMessage("/party" , politicianName + " " + politicianParty);
+                sendMessage("/zipCode" , zipCode);
             }
         }).start();
 

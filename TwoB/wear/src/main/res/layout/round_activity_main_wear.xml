@@ -6,34 +6,44 @@
                 tools:context="com.example.david.twob.MainActivity"
                 tools:deviceIds="wear_round">
 
+    <android.support.wearable.view.GridViewPager
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <android.support.wearable.view.DotsPageIndicator
+        android:id="@+id/indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"/>
+
     <TextView
         android:id="@+id/wear_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:textSize="20dp"
-        android:text="Name"/>
+        android:textSize="20dp"/>
 
     <TextView
         android:id="@+id/wear_party"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/wear_name"
-        android:text="Party"/>
-
-    <Button
-        android:id="@+id/vote_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="2012 Vote View"
-        android:layout_centerInParent="true"
-        android:layout_below="@id/wear_party" />
-
-    <ImageView
-        android:id="@+id/wear_photo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_below="@id/wear_name"/>
 
 
 </RelativeLayout>
+
+<!--<Button-->
+<!--android:id="@+id/vote_view"-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:text="2012 Vote View"-->
+<!--android:layout_centerInParent="true"-->
+<!--android:layout_below="@id/wear_party" />-->
+
+<!--<ImageView-->
+<!--android:id="@+id/wear_photo"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="match_parent"/>-->
