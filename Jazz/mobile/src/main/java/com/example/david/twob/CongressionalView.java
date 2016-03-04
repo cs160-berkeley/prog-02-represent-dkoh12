@@ -29,6 +29,11 @@ public class CongressionalView extends AppCompatActivity {
         if(intent.getStringExtra("zipcode") != null) {
             Log.d(TAG, "RESET zipcode");
             zipCode = intent.getStringExtra("zipcode");
+
+            //resend to watch
+            Intent sendIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
+            sendIntent.putExtra("zipCode", zipCode);
+            startService(sendIntent);
         }
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycle_view);
@@ -63,12 +68,10 @@ public class CongressionalView extends AppCompatActivity {
         ((MyAdapter) mAdapter).setOnItemClickListener(new MyAdapter.MyClickListener() {
             @Override
             public void onItemClick(int position, View v) {
-                Intent i = new Intent(CongressionalView.this, DetailedView.class);
-
                 ArrayList<Candidate> newList = getDataSet(zipCode);
 
+                Intent i = new Intent(CongressionalView.this, DetailedView.class);
                 i.putExtra("name", newList.get(position).getName());
-
                 startActivity(i);
             }
         });

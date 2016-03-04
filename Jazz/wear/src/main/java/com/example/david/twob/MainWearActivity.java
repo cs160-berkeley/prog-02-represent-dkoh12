@@ -1,10 +1,9 @@
 package com.example.david.twob;
 
 import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.hardware.SensorEventListener;
 import android.os.Bundle;
@@ -18,12 +17,10 @@ import android.widget.Button;
 import android.content.Context;
 import android.widget.TextView;
 
-import com.google.android.gms.wearable.Wearable;
-
 import java.util.ArrayList;
 import java.util.Random;
 
-public class MainWearActivity extends Activity implements WearableListView.ClickListener {
+public class MainWearActivity extends Activity implements WearableListView.ClickListener, SensorEventListener {
 
     private WearableListView mListView;
     private static final String TAG = "@>@>@>@>";
@@ -33,9 +30,13 @@ public class MainWearActivity extends Activity implements WearableListView.Click
     public static ArrayList<Candidate> mCandidates;
     Boolean check = Boolean.FALSE;
 
-    private ShakeDetector mShakeDetector;
+    //private ShakeDetector mShakeDetector;
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
+
+    private long lastUpdate = 0;
+    private float last_x, last_y, last_z;
+    private static final int SHAKE_THRESHOLD = 600;
 
     //    http://stackoverflow.com/questions/2317428/android-i-want-to-shake-it
     @Override
@@ -56,7 +57,7 @@ public class MainWearActivity extends Activity implements WearableListView.Click
         final Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
-        if(extras != null) {
+        if (extras != null) {
             zipCode = extras.getString("zipCode");
             //might put updatevoteviewbutton here w/ parameter paramZipCode
             mCandidates = getDataSet(zipCode);
@@ -67,34 +68,18 @@ public class MainWearActivity extends Activity implements WearableListView.Click
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mShakeDetector = new ShakeDetector(new ShakeDetector.OnShakeListener() {
-            @Override
-            public void onShake() {
-                //I believe his function gets called when you shake the watch.
-                //generate new zipCode;
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
-                Random rand = new Random();
-                int randZipCode = rand.nextInt((100000 - 10000) + 1) + 10000;
-                zipCode = Integer.toString(randZipCode);
-                updateVoteViewButton();
-
-                Intent shakeIntent = new Intent(getBaseContext(), WatchToPhoneServiceTempSol.class);
-                shakeIntent.putExtra("nameOrZip", zipCode);
-                startService(shakeIntent);
-            }
-        });
-
-        mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
     }
 
-    private void updateVoteViewButton(){
+    private void updateVoteViewButton() {
         mVoteView = (Button) findViewById(R.id.vote_view);
 
         mVoteView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getBaseContext(), VoteView.class);
-                if(check) {
+                if (check) {
                     i.putExtra("zipCode", zipCode);
                 }
                 startActivity(i);
@@ -106,7 +91,7 @@ public class MainWearActivity extends Activity implements WearableListView.Click
     private ArrayList<Candidate> getDataSet(String zipCode) {
         ArrayList<Candidate> candidates = new ArrayList<>();
 
-        if(zipCode.equals("94704")) {
+        if (zipCode.equals("94704")) {
             candidates.add(new Candidate("Kevin McCarthy", "Republican", R.drawable.kevin_mccarthy));
             candidates.add(new Candidate("Barbara Boxer", "Democrat", R.drawable.senator_barbara_boxer));
             candidates.add(new Candidate("Dianne Feinstein", "Democrat", R.drawable.senator_dianne_feinstein));
@@ -123,18 +108,18 @@ public class MainWearActivity extends Activity implements WearableListView.Click
     @Override
     protected void onResume() {
         super.onResume();
-        mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
     protected void onPause() {
-        mSensorManager.unregisterListener(mShakeDetector);
+        mSensorManager.unregisterListener(this);
         super.onPause();
     }
 
     @Override
     public void onClick(WearableListView.ViewHolder viewHolder) {
-        Intent i = new Intent(this, WatchToPhoneServiceTempSol.class);
+        Intent i = new Intent(this, WatchToPhoneService.class);
         TextView nameTemp = (TextView) viewHolder.itemView.findViewById(R.id.wear_name);
         String name = nameTemp.getText().toString();
         Log.d(TAG, "name: " + name);
@@ -150,42 +135,88 @@ public class MainWearActivity extends Activity implements WearableListView.Click
 
         private final LayoutInflater mLayoutInflater;
 
-        private WearAdapter(Context c){
+        private WearAdapter(Context c) {
             mLayoutInflater = LayoutInflater.from(c);
         }
 
         @Override
-        public WearableListView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i){
+        public WearableListView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
             return new WearableListView.ViewHolder(mLayoutInflater.inflate(R.layout.activity_main_wear, null));
         }
 
         @Override
-        public void onBindViewHolder(WearableListView.ViewHolder viewHolder, int i){
+        public void onBindViewHolder(WearableListView.ViewHolder viewHolder, int i) {
             TextView name = (TextView) viewHolder.itemView.findViewById(R.id.wear_name);
             String mName = mCandidates.get(i).getName();
             name.setText(mName);
 
-//            TextView party = (TextView) viewHolder.itemView.findViewById(R.id.wear_party);
             String mParty = mCandidates.get(i).getParty();
-            //party.setText(mParty);
 
-            if(mParty.equals("Republican")){
+            if (mParty.equals("Republican")) {
                 name.setBackgroundColor(getResources().getColor(R.color.newRed));
-                //party.setBackgroundColor(getResources().getColor(R.color.newRed));
             } else {
                 name.setBackgroundColor(getResources().getColor(R.color.dark_blue));
-                //party.setBackgroundColor(getResources().getColor(R.color.dark_blue));
             }
 
             viewHolder.itemView.setTag(i);
         }
 
         @Override
-        public int getItemCount(){
-            if(check)
+        public int getItemCount() {
+            if (check)
                 return mCandidates.size();
             else
                 return 0;
         }
     }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+        Log.d(TAG, "accuracy changed");
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        Log.d(TAG, "on sensor changed");
+
+        Sensor mySensor = event.sensor;
+
+        if(mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
+
+            long curTime = System.currentTimeMillis();
+
+            if((curTime - lastUpdate) > 100) {
+                long diffTime = (curTime - lastUpdate);
+                lastUpdate = curTime;
+
+                float speed = Math.abs(x + y + z - last_x - last_y - last_z)/ diffTime * 10000;
+
+                if(speed > SHAKE_THRESHOLD) {
+                    whenShake();
+                }
+
+                last_x = x;
+                last_y = y;
+                last_z = z;
+
+            }
+        }
+    }
+
+
+    private void whenShake() {
+        Random rand = new Random();
+        int randZipCode = rand.nextInt(90000) + 10000; // +1 ?
+        zipCode = Integer.toString(randZipCode);
+        //updateVoteViewButton();
+
+        Intent shakeIntent = new Intent(getBaseContext(), WatchToPhoneService.class);
+        shakeIntent.putExtra("nameOrZip", zipCode);
+        startService(shakeIntent);
+
+    }
+
 }
