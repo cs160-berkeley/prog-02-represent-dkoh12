@@ -16,7 +16,7 @@ David Koh ([dkoh@berkeley.edu](mailto:your_email@berkeley.edu))
 
 ## Demo Video
 
-See [your demo video title here] (https://link_to_your_video)
+See [Proj2B] (https://www.youtube.com/watch?v=y1zq34ZYDWc)
 
 ## Screenshots
 
