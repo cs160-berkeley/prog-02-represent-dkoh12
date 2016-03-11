@@ -1,4 +1,4 @@
-package com.example.david.twob;
+package com.example.david.proj2b;
 
 /**
  * Created by david on 3/1/16.
@@ -14,19 +14,19 @@ import java.nio.charset.StandardCharsets;
 
 public class WatchListenerService extends WearableListenerService {
     private static final String TAG = "@>@>@>@>";
-    private static final String zipCode = "/zipCode";
+    private static final String dataToWatch = "/dataToWatch";
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
         Log.d(TAG, "in WatchListenerService, got: " + messageEvent.getPath());
 
-        if( messageEvent.getPath().equalsIgnoreCase(zipCode) ) {
-            String zipCode = new String(messageEvent.getData(), StandardCharsets.UTF_8);
+        if( messageEvent.getPath().equalsIgnoreCase(dataToWatch) ) {
+            String data = new String(messageEvent.getData(), StandardCharsets.UTF_8);
 
             Intent intent = new Intent(this, MainWearActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-            intent.putExtra("zipCode", zipCode);
+            intent.putExtra("dataToWatch", data);
 
             startActivity(intent);
         } else {

@@ -1,5 +1,6 @@
-package com.example.david.twob;
+package com.example.david.proj2b;
 
+import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -8,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -19,6 +22,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.CandidateViewHolde
     private static String LOG_TAG = "MyAdapter";
     private List<Candidate> candidates;
     private static MyClickListener sMyClickListener;
+
+    Context context;
 
     public static class CandidateViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         CardView c;
@@ -52,8 +57,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.CandidateViewHolde
         this.sMyClickListener = myClickListener;
     }
 
-    public MyAdapter(List<Candidate> candidates) {
+    public MyAdapter(List<Candidate> candidates, Context context) {
         this.candidates = candidates;
+        this.context = context;
+
     }
 
     @Override
@@ -75,7 +82,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.CandidateViewHolde
         canViewHolder.candidateEmail.setText(candidates.get(i).mEmail);
         canViewHolder.candidateWebsite.setText(candidates.get(i).mWebsite);
         canViewHolder.candidateTweet.setText(candidates.get(i).mTweet);
-        canViewHolder.candidatePhoto.setImageResource(candidates.get(i).mPhotoId);
+
+        //mPhotoId should be Url
+        Picasso.with(context).load(candidates.get(i).mPhotoId).into(canViewHolder.candidatePhoto);
+
+        //canViewHolder.candidatePhoto.setImageResource(candidates.get(i).mPhotoId);
     }
 
     @Override

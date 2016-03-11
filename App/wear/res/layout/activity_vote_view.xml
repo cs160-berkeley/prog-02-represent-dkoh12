@@ -8,6 +8,6 @@
     android:layout_height="match_parent"
     app:rectLayout="@layout/rect_activity_vote_view"
     app:roundLayout="@layout/round_activity_vote_view"
-    tools:context="com.example.david.twob.VoteView"
+    tools:context="com.example.david.proj2b.VoteView"
     tools:deviceIds="wear">
 </android.support.wearable.view.WatchViewStub>

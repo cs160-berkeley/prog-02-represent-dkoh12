@@ -1,4 +1,4 @@
-package com.example.david.twob;
+package com.example.david.proj2b;
 
 import android.app.Service;
 import android.content.Intent;
@@ -48,13 +48,13 @@ public class PhoneToWatchService extends Service {
 
         Log.d(TAG, "on start command");
 
-        final String zipCode = extras.getString("zipCode");
+        final String dataToWatch = extras.getString("dataToWatch");
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 mApiClient.connect();
-                sendMessage("/zipCode" , zipCode);
+                sendMessage("/dataToWatch" , dataToWatch);
             }
         }).start();
 

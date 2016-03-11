@@ -13,4 +13,16 @@
     <color name="aqua">#53bbb4</color>
     <color name="muave">#c25975</color>
 
+    <color name="forest_green">#9ce1b0</color>
+    <color name="torquoise">#81d8d0</color>
+    <color name="light_purple">#c4cbff</color>
+    <color name="brown">#c69587</color>
+    <color name="amber">#c7989f</color>
+    <color name="bright_purple">#bf328e</color>
+    <color name="deep_green">#008080</color>
+
+    <color name="purple">#9225d0</color>
+    <color name="easy_green">#8aeabd</color>
+    <color name="bubble_blue">#13eff4</color>
+
 </resources>

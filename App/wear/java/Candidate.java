@@ -1,4 +1,4 @@
-package com.example.david.twob;
+package com.example.david.proj2b;
 
 /**
  * Created by david on 2/25/16.
@@ -6,12 +6,12 @@ package com.example.david.twob;
 public class Candidate {
     public String mName;
     public String mParty;
-    public int mPhotoId;
+    public String mState;
 
-    public Candidate(String name, String party, int photo) {
+    public Candidate(String name, String party, String state) {
         mName = name;
         mParty = party;
-        mPhotoId = photo;
+        mState = state;
     }
 
     public String getName() {
@@ -30,12 +30,12 @@ public class Candidate {
         mParty = party;
     }
 
-    public int getPhotoId() {
-        return mPhotoId;
+    public String getState() {
+        return mState;
     }
 
-    public void setPhotoId(int photoId) {
-        mPhotoId = photoId;
+    public void setState(String state) {
+        mState = state;
     }
 
 }

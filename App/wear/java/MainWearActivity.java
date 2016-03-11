@@ -1,11 +1,12 @@
-package com.example.david.twob;
+package com.example.david.proj2b;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
-import android.hardware.SensorManager;
 import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
 import android.support.wearable.view.WearableListView;
@@ -14,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.content.Context;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -27,10 +27,11 @@ public class MainWearActivity extends Activity implements WearableListView.Click
     private Button mVoteView;
     private String zipCode;
 
-    public static ArrayList<Candidate> mCandidates;
+    ArrayList<Candidate> mCandidates = new ArrayList<>();
+    String arr[];
+    String county;
     Boolean check = Boolean.FALSE;
 
-    //private ShakeDetector mShakeDetector;
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
 
@@ -58,9 +59,24 @@ public class MainWearActivity extends Activity implements WearableListView.Click
         Bundle extras = intent.getExtras();
 
         if (extras != null) {
-            zipCode = extras.getString("zipCode");
-            //might put updatevoteviewbutton here w/ parameter paramZipCode
-            mCandidates = getDataSet(zipCode);
+            String s = extras.getString("dataToWatch");
+
+            arr = s.split("@");
+
+            Log.d(TAG, "arr.length: " + arr.length);
+
+            for (int i = 0; i < arr.length; i++) {
+                Log.d(TAG, i + " " + arr[i]);
+            }
+
+            zipCode = arr[0];
+            county = arr[1];
+
+            for (int i = 2; i < arr.length; i += 3) {
+                Candidate c = new Candidate(arr[i], arr[i + 1], arr[i + 2]);
+                mCandidates.add(c);
+            }
+
             check = Boolean.TRUE;
         }
 
@@ -80,29 +96,12 @@ public class MainWearActivity extends Activity implements WearableListView.Click
             public void onClick(View v) {
                 Intent i = new Intent(getBaseContext(), VoteView.class);
                 if (check) {
-                    i.putExtra("zipCode", zipCode);
+                    String location = county + "@" + arr[4];
+                    i.putExtra("location", location);
                 }
                 startActivity(i);
             }
         });
-    }
-
-    //given zipCode retrieve DataSet
-    private ArrayList<Candidate> getDataSet(String zipCode) {
-        ArrayList<Candidate> candidates = new ArrayList<>();
-
-        if (zipCode.equals("94704")) {
-            candidates.add(new Candidate("Kevin McCarthy", "Republican", R.drawable.kevin_mccarthy));
-            candidates.add(new Candidate("Barbara Boxer", "Democrat", R.drawable.senator_barbara_boxer));
-            candidates.add(new Candidate("Dianne Feinstein", "Democrat", R.drawable.senator_dianne_feinstein));
-        } else { //80001
-            candidates.add(new Candidate("Cory Gardner", "Republican", R.drawable.kevin_mccarthy));
-            candidates.add(new Candidate("Michael Bennet", "Democrat", R.drawable.kevin_mccarthy));
-            candidates.add(new Candidate("Mike Coffman", "Republican", R.drawable.kevin_mccarthy));
-        }
-        //Collections.shuffle(list);
-
-        return candidates;
     }
 
     @Override
@@ -122,6 +121,7 @@ public class MainWearActivity extends Activity implements WearableListView.Click
         Intent i = new Intent(this, WatchToPhoneService.class);
         TextView nameTemp = (TextView) viewHolder.itemView.findViewById(R.id.wear_name);
         String name = nameTemp.getText().toString();
+
         Log.d(TAG, "name: " + name);
         i.putExtra("nameOrZip", name);
         startService(i);
@@ -147,6 +147,7 @@ public class MainWearActivity extends Activity implements WearableListView.Click
         @Override
         public void onBindViewHolder(WearableListView.ViewHolder viewHolder, int i) {
             TextView name = (TextView) viewHolder.itemView.findViewById(R.id.wear_name);
+
             String mName = mCandidates.get(i).getName();
             name.setText(mName);
 
@@ -172,29 +173,27 @@ public class MainWearActivity extends Activity implements WearableListView.Click
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-        Log.d(TAG, "accuracy changed");
+        //Log.d(TAG, "accuracy changed");
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        Log.d(TAG, "on sensor changed");
-
         Sensor mySensor = event.sensor;
 
-        if(mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+        if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             float x = event.values[0];
             float y = event.values[1];
             float z = event.values[2];
 
             long curTime = System.currentTimeMillis();
 
-            if((curTime - lastUpdate) > 100) {
+            if ((curTime - lastUpdate) > 100) {
                 long diffTime = (curTime - lastUpdate);
                 lastUpdate = curTime;
 
-                float speed = Math.abs(x + y + z - last_x - last_y - last_z)/ diffTime * 10000;
+                float speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000;
 
-                if(speed > SHAKE_THRESHOLD) {
+                if (speed > SHAKE_THRESHOLD) {
                     whenShake();
                 }
 
@@ -211,7 +210,6 @@ public class MainWearActivity extends Activity implements WearableListView.Click
         Random rand = new Random();
         int randZipCode = rand.nextInt(90000) + 10000; // +1 ?
         zipCode = Integer.toString(randZipCode);
-        //updateVoteViewButton();
 
         Intent shakeIntent = new Intent(getBaseContext(), WatchToPhoneService.class);
         shakeIntent.putExtra("nameOrZip", zipCode);

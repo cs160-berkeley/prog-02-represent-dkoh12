@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.example.david.twob"
+<manifest package="com.example.david.proj2b"
           xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+
 
     <application
         android:allowBackup="true"
@@ -8,10 +13,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -23,7 +25,7 @@
             android:label="CongressionalView"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="com.example.david.twob.CongressionalView"/>
+                <action android:name="com.example.david.proj2b.CongressionalView"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
@@ -33,7 +35,7 @@
             android:label="DetailedView"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="com.example.david.twob.DetailedView"/>
+                <action android:name="com.example.david.proj2b.DetailedView"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
@@ -48,6 +50,15 @@
             </intent-filter>
         </service>
 
+
+
+
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="ed9223f329783df375577ec84063f2ef45c98cc5" />
     </application>
+
+
 
 </manifest>

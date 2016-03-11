@@ -1,4 +1,4 @@
-package com.example.david.twob;
+package com.example.david.proj2b;
 
 /**
  * Created by david on 3/3/16.
@@ -11,14 +11,10 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by david on 3/1/16.

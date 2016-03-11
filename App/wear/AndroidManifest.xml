@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.example.david.twob"
+<manifest package="com.example.david.proj2b"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-feature android:name="android.hardware.type.watch"/>
@@ -23,7 +23,7 @@
             android:name=".VoteView"
             android:label="@string/title_activity_vote_view">
             <intent-filter>
-                <action android:name="com.example.david.twob.VoteView"/>
+                <action android:name="com.example.david.proj2b.VoteView"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
