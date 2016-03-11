@@ -14,6 +14,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -45,8 +47,8 @@ public class DetailedView extends AppCompatActivity {
 
             String url = "https://congress.api.sunlightfoundation.com/legislators?first_name="+firstName+"&last_name="+lastName+"&apikey="+api_key;
 
-            ImageView photoElement = (ImageView) findViewById(R.id.detail_photo);
-            photoElement.setImageResource(R.drawable.kevin_mccarthy);
+//            ImageView photoElement = (ImageView) findViewById(R.id.detail_photo);
+//            photoElement.setImageResource(R.drawable.kevin_mccarthy);
 
             new RetrieveDetailedData().execute(url);
 
@@ -149,8 +151,6 @@ public class DetailedView extends AppCompatActivity {
 
             String s = detailedList.get(3);
 
-            //Log.d(TAG, "list length: " + s);
-
             TableLayout tableLayout = (TableLayout) findViewById(R.id.detail_committee_list);
             TableRow tableRows[] = new TableRow[Integer.parseInt(s)];
             for(int i = 0;i < tableRows.length; i++){
@@ -198,6 +198,13 @@ public class DetailedView extends AppCompatActivity {
                 billLayout.addView(billRows[i]);
 
             }
+
+            Log.d(TAG, "bio ID: " + result.get(0));
+
+            String photoUrl = "https://theunitedstates.io/images/congress/450x550/"+result.get(0)+".jpg";
+            ImageView image = (ImageView) findViewById(R.id.detail_photo);
+            Picasso.with(getBaseContext()).load(photoUrl).into(image);
+
         }
     }
 }

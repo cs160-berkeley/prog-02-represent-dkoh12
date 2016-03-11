@@ -9,9 +9,9 @@ public class Candidate {
     public String mWebsite;
     public String mParty;
     public String mTweet;
-    public int mPhotoId;
+    public String mPhotoId;
 
-    public Candidate(String name, String party, String email, String website, String tweet, int photo) {
+    public Candidate(String name, String party, String email, String website, String tweet, String photo) {
         mName = name;
         mEmail = email;
         mWebsite = website;
@@ -60,11 +60,11 @@ public class Candidate {
         mTweet = tweet;
     }
 
-    public int getPhotoId() {
+    public String getPhotoId() {
         return mPhotoId;
     }
 
-    public void setPhotoId(int photoId) {
+    public void setPhotoId(String photoId) {
         mPhotoId = photoId;
     }
 
