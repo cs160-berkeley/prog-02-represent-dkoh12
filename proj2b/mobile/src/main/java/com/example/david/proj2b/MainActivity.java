@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private String url = "https://congress.api.sunlightfoundation.com/";
     private String api_key = "92ace5ed4e0247fc81c1607f25d89f9d";
-    String GoogleAPIkey = "AIzaSyD6g-CCyUIVQh2ditKtNOZZkJ0TAWXbQA0";
+    String GoogleAPIkey = "AIzaSyADuYrTKJx0a1jZ2JPB9QFYi4z7JK92Uhg";
     private Button mEnterButton;
     private EditText mZipCode;
     private CheckBox mCurrentLocation;
@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private void startWatch() {
         county = getCountyCode(latitude, longitude);
         watchToData = zipCode + "@" + county + "@" + watchToData;
+
         Log.d(TAG, "watchToData: " + watchToData);
 
         Intent sendIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
@@ -203,10 +204,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private String getCountyCode(double mLatitude, double mLongitude) {
         String mCounty = null;
 
-        String myUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+mLatitude+","+mLongitude+"&key="+GoogleAPIkey;
+        String myUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+mLatitude+","+mLongitude;
 
         try {
             mCounty = new RetrieveData().execute(myUrl, "google").get();
+            String s[] = mCounty.split(" ");
+            if(s[s.length-1].equals("County")){
+                mCounty = "";
+                for(int i=0; i<s.length-1; i++){
+                    mCounty += s[i];
+                    if(i != s.length-2)
+                        mCounty += " ";
+                }
+            }
+
         } catch (Exception e) {
             Log.d(TAG, "getting county failed");
         }
@@ -267,9 +278,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 Log.d(TAG, "in google");
 
                 try {
-                    Log.d(TAG, "ON!!!");
                     JSONArray arr = jsonObject.getJSONArray("results");
-                    Log.d(TAG, "OFF!!");
+
+                    String county = null;
+                    String type = null;
 
                     Log.d(TAG, "arr length: " + arr.length());
 
@@ -283,22 +295,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         for(int j=0; j<jArr.length(); j++){
                             JSONObject o = jArr.getJSONObject(i);
 
-                            String type = o.getString("types");
-
+                            type = o.getString("types");
                             Log.d(TAG, "type: " + type);
 
-
-                            String county = o.getString("long_name");
-
-                            Log.d(TAG, "county: " + county);
-
+                            if((type.equals("[\"administrative_area_level_2\"]") ||
+                                    (type.equals("[\"administrative_area_level_2\",\"political\"]")))) {
+                                county = o.getString("long_name");
+                                Log.d(TAG, "county: " + county);
+                                break;
+                            }
                         }
 
-                        sb.append("hi");
-                        //Log.d(TAG, "name: " + name + ", party: " + party + ", state: " + state);
-                        //sb.append(name + "@" + party + "@" + state);
-
+                        if(county != null && ((type.equals("[\"administrative_area_level_2\"]") ||
+                                (type.equals("[\"administrative_area_level_2\",\"political\"]"))))){
+                            break;
+                        }
                     }
+
+                    Log.d(TAG, "outside");
+                    Log.d(TAG, "county: " + county);
+
+                    sb.append(county);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.d(TAG, e.toString());

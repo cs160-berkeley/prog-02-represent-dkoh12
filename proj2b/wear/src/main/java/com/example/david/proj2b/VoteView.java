@@ -58,28 +58,6 @@ public class VoteView extends Activity {
                 Log.d(TAG, "exception Retrieve Data");
             }
 
-//            if (state.equals("CA")) {
-//                TextView obama = (TextView) findViewById(R.id.obama_percentage);
-//                obamaPercent = 52;
-//                obama.setText("52%");
-//                TextView romney = (TextView) findViewById(R.id.romney_percentage);
-//                romneyPercent = 48;
-//                romney.setText("48%");
-//            } else {
-//                TextView obama = (TextView) findViewById(R.id.obama_percentage);
-//                obamaPercent = 49;
-//                obama.setText("49%");
-//                TextView romney = (TextView) findViewById(R.id.romney_percentage);
-//                romneyPercent = 51;
-//                romney.setText("51%");
-//            }
-
-//            View backgroundElement = (View) findViewById(R.id.vote_view_background);
-//            if (obamaPercent > romneyPercent) {
-//                backgroundElement.setBackgroundColor(getResources().getColor(R.color.dark_blue));
-//            } else {
-//                backgroundElement.setBackgroundColor(getResources().getColor(R.color.newRed));
-//            }
         }
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -103,7 +81,7 @@ public class VoteView extends Activity {
                 // Otherwise, set the URL to null.
                 Uri.parse("http://host/path"),
                 // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.example.david.twob/http/host/path")
+                Uri.parse("android-app://com.example.david.proj2b/http/host/path")
         );
         AppIndex.AppIndexApi.start(mClient, viewAction);
     }
@@ -122,7 +100,7 @@ public class VoteView extends Activity {
                 // Otherwise, set the URL to null.
                 Uri.parse("http://host/path"),
                 // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.example.david.twob/http/host/path")
+                Uri.parse("android-app://com.example.david.proj2b/http/host/path")
         );
         AppIndex.AppIndexApi.end(mClient, viewAction);
         mClient.disconnect();
@@ -136,17 +114,27 @@ public class VoteView extends Activity {
         protected Void doInBackground(String... params) {
             Log.d(TAG, "params " + params[0]);
 
+            Log.d(TAG, "my state: " + state);
+            Log.d(TAG, "my county: " + county);
+
             try {
                 JSONParser parser = new JSONParser(getBaseContext());
                 JSONArray jArr = (JSONArray) parser.getJSONFromFile(params[0]);
 
                 Log.d(TAG, "JARR length: " + jArr.length());
 
+                //why does proj2b stop?
+
                 for (int i=0; i<jArr.length(); i++) {
 
                     JSONObject jsonObject = jArr.getJSONObject(i);
 
                     if (state.equals(jsonObject.getString("state-postal"))){
+
+                        Log.d(TAG, "state: " + jsonObject.getString("state-postal"));
+                        Log.d(TAG, "county: " + jsonObject.getString("county-name"));
+
+
                         if(county.equals(jsonObject.getString("county-name"))) {
                             obamaPercent = jsonObject.getInt("obama-percentage");
                             romneyPercent = jsonObject.getInt("romney-percentage");
@@ -163,6 +151,9 @@ public class VoteView extends Activity {
                 Log.e(TAG, "unexpected JSON exception" + e.toString());
             }
 
+            Log.d(TAG, "obama: " + obamaPercent);
+            Log.d(TAG, "romney: " + romneyPercent);
+
             return null;
         }
 
@@ -172,14 +163,15 @@ public class VoteView extends Activity {
 //            Log.d(TAG, "result received ");
 //            super.onPostExecute(result);
 
+            Log.d(TAG, "on post execute");
             Log.d(TAG, "obama %: " + obamaPercent);
             Log.d(TAG, "romney %: " + romneyPercent);
 
             TextView obama = (TextView) findViewById(R.id.obama_percentage);
-            obama.setText(obamaPercent);
+            obama.setText("" + obamaPercent + "%");
 
             TextView romney = (TextView) findViewById(R.id.romney_percentage);
-            romney.setText(romneyPercent);
+            romney.setText("" + romneyPercent + "%");
 
             View backgroundElement = (View) findViewById(R.id.vote_view_background);
             if (obamaPercent > romneyPercent) {
