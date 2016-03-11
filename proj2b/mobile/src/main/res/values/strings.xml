@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">proj2b</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_congressional_view">CongressionalView</string>
+    <string name="title_activity_detailed_view">DetailedView</string>
+
+    <string name="zip_code_title">Enter zip code</string>
+
+    <string name="end_date">12/25/2016</string>
+    <string name="committee1">Horseshoe Committee</string>
+    <string name="bill1">Free the drones bill</string>
+    <string name="bill_data">12/2/15</string>
+    <string name="google_app_id">396761744519</string>
+
+
+</resources>
