@@ -110,6 +110,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     private void startWatch() {
+        Log.d(TAG, "get county");
+        Log.d(TAG, "lat: " + latitude);
+        Log.d(TAG, "lon: " + longitude);
+
+        String area = getLatLon(Integer.parseInt(zipCode));
+        String[] arr = area.split("@");
+        latitude = Double.parseDouble(arr[0]);
+        longitude = Double.parseDouble(arr[1]);
+
+        Log.d(TAG, "get county 22");
+        Log.d(TAG, "lat: " + latitude);
+        Log.d(TAG, "lon: " + longitude);
+
         county = getCountyCode(latitude, longitude);
         watchToData = zipCode + "@" + county + "@" + watchToData;
 
@@ -187,6 +200,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         return super.onOptionsItemSelected(item);
     }
 
+
+    private String getLatLon(int zipcode){
+        Geocoder mGeocoder = new Geocoder(this, Locale.US);
+        String area = "";
+        try{
+            List<Address> addresses = mGeocoder.getFromLocationName(zipCode, 1);
+            Address address = addresses.get(0);
+
+            String lat = "" + address.getLatitude();
+            String lon = "" + address.getLongitude();
+
+            area = lat + "@" + lon;
+
+        } catch (Exception e){
+            Log.d(TAG, "getLatLon exception");
+        }
+
+        return area;
+    }
 
     private String getZipCode(double mLatitude, double mLongitude) {
         String myZipcode = null;
@@ -276,25 +308,33 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             } else {
                 JSONObject jsonObject = jsonParser.getJSONFromUrl(params[0]);
 
+
+                Log.d(TAG, "Google gets zip Code: " + zipCode);
                 Log.d(TAG, "in google");
 
                 try {
+                    //feel like something is weird with this array
                     JSONArray arr = jsonObject.getJSONArray("results");
 
                     String county = null;
                     String type = null;
 
-                    Log.d(TAG, "arr length: " + arr.length());
-
                     for (int i = 0; i < arr.length(); i++) {
 
-                        Log.d(TAG, "iteration " + i);
+                        Log.d(TAG, "iteration i: " + i);
 
                         JSONObject json = arr.getJSONObject(i);
                         JSONArray jArr = json.getJSONArray("address_components");
 
+                        Log.d(TAG, "jARR length: " + jArr.length());
+
                         for(int j=0; j<jArr.length(); j++){
-                            JSONObject o = jArr.getJSONObject(i);
+                            Log.d(TAG, "iteration j: " + j);
+
+                            JSONObject o = jArr.getJSONObject(j);
+
+                            String long_name = o.getString("long_name");
+                            Log.d(TAG, long_name);
 
                             type = o.getString("types");
                             Log.d(TAG, "type: " + type);
@@ -303,7 +343,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                                     (type.equals("[\"administrative_area_level_2\",\"political\"]")))) {
                                 county = o.getString("long_name");
                                 Log.d(TAG, "county: " + county);
-                                break;
+                                //break;
                             }
                         }
 
