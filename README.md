@@ -4,23 +4,33 @@ Briefly describe your app here.
 
 Note
 
-Right now there is a ShakeDetector.java file inside app/wear/java. Ignore this for Proj 2B. This file does nothing. The shake is implemented inside MainWearActivity.
-
-Jazz folder contains all my android project. It is called Jazz because out of the multiple projects I worked on, Jazz is the only one that completed the assignment. No it is not related to music.
-
 The Apk folder contains apk files and App folder contains the source code from the Jazz folder.
 
 ## Authors
 
-David Koh ([dkoh@berkeley.edu](mailto:your_email@berkeley.edu))
+David Koh ([dkoh@berkeley.edu](mailto:dkoh@berkeley.edu))
 
 ## Demo Video
 
 See [Proj2B] (https://www.youtube.com/watch?v=y1zq34ZYDWc)
 
+See [Final Project 2] (https://youtu.be/tXBKJsUqoBw)
+
 ## Screenshots
 
 <img src="screenshots/main.png" height="400" alt="Screenshot"/>
+<img src="screenshots/currentloc.png" height="400" alt="Screenshot"/>
+<img src="screenshots/barbara.png" height="400" alt="Screenshot"/>
+<img src="screenshots/barbara_detailed.png" height="400" alt="Screenshot"/>
+<img src="screenshots/bills_sponsored.png" height="400" alt="Screenshot"/>
+<img src="screenshots/name.png" height="400" alt="Screenshot"/>
+<img src="screenshots/red.png" height="400" alt="Screenshot"/>
+<img src="screenshots/red_detailed.png" height="400" alt="Screenshot"/>
+<img src="screenshots/watch_main.png" height="400" alt="Screenshot"/>
+<img src="screenshots/watch_list.png" height="400" alt="Screenshot"/>
+<img src="screenshots/vote_blue.png" height="400" alt="Screenshot"/>
+<img src="screenshots/vote_red.png" height="400" alt="Screenshot"/>
+
 
 ## Acknowledgments
 
