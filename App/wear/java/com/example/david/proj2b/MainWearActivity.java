@@ -211,6 +211,8 @@ public class MainWearActivity extends Activity implements WearableListView.Click
         int randZipCode = rand.nextInt(90000) + 10000; // +1 ?
         zipCode = Integer.toString(randZipCode);
 
+        Log.d(TAG, "new shake zipcode: " + zipCode );
+
         Intent shakeIntent = new Intent(getBaseContext(), WatchToPhoneService.class);
         shakeIntent.putExtra("nameOrZip", zipCode);
         startService(shakeIntent);

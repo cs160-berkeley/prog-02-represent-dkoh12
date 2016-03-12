@@ -1,6 +1,8 @@
 package com.example.david.proj2b;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +17,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.AppSession;
@@ -46,6 +49,11 @@ public class CongressionalView extends AppCompatActivity {
     private String party;
     private String email;
     private String website;
+    String watchToData = null;
+    protected String county;
+
+    protected Double latitude;
+    protected Double longitude;
 
     // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
     private static final String TWITTER_KEY = "rXtvhNR3T0ag8BfXpPPEwD4EW";
@@ -65,13 +73,36 @@ public class CongressionalView extends AppCompatActivity {
         Log.d(TAG, "zipCode is " + zipCode);
 
         if(intent.getStringExtra("zipcode") != null) {
-            Log.d(TAG, "RESET zipcode");
             zipCode = intent.getStringExtra("zipcode");
+            Log.d(TAG, "RESET zipCode is " + zipCode);
 
             //resend to watch
+
+            try {
+                String myUrl = url + "legislators/locate?zip=" + zipCode + "&apikey=" + api_key;
+                watchToData = new RetrieveWatchData().execute(myUrl, "sun").get();
+            } catch (Exception e) {
+                Log.d(TAG, "failed watchToDATA");
+            }
+
+            String area = getLatLon(zipCode);
+            String[] arr = area.split("@");
+            latitude = Double.parseDouble(arr[0]);
+            longitude = Double.parseDouble(arr[1]);
+
+            Log.d(TAG, "get county 22");
+            Log.d(TAG, "lat: " + latitude);
+            Log.d(TAG, "lon: " + longitude);
+
+            county = getCountyCode(latitude, longitude);
+            watchToData = zipCode + "@" + county + "@" + watchToData;
+
+            Log.d(TAG, "watchToData: " + watchToData);
+
             Intent sendIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
-            sendIntent.putExtra("zipCode", zipCode);
+            sendIntent.putExtra("dataToWatch", watchToData);
             startService(sendIntent);
+
         }
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycle_view);
@@ -83,6 +114,50 @@ public class CongressionalView extends AppCompatActivity {
         mAdapter = new MyAdapter(candidates, getBaseContext());
         mRecyclerView.setAdapter(mAdapter);
 
+    }
+
+    private String getLatLon(String zipcode){
+        Geocoder mGeocoder = new Geocoder(this, Locale.US);
+        String area = "";
+        try{
+            List<Address> addresses = mGeocoder.getFromLocationName(zipcode, 1);
+            Address address = addresses.get(0);
+
+            String lat = "" + address.getLatitude();
+            String lon = "" + address.getLongitude();
+
+            area = lat + "@" + lon;
+
+        } catch (Exception e){
+            Log.d(TAG, "getLatLon exception");
+        }
+
+        return area;
+    }
+
+    private String getCountyCode(double mLatitude, double mLongitude) {
+        String mCounty = null;
+
+        String myUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+mLatitude+","+mLongitude;
+
+        try {
+            mCounty = new RetrieveWatchData().execute(myUrl, "google").get();
+            String s[] = mCounty.split(" ");
+            if(s[s.length-1].equals("County")){
+                mCounty = "";
+                for(int i=0; i<s.length-1; i++){
+                    mCounty += s[i];
+                    if(i != s.length-2)
+                        mCounty += " ";
+                }
+            }
+
+        } catch (Exception e) {
+            Log.d(TAG, "getting county failed");
+        }
+
+        Log.d(TAG, "mCounty: " + mCounty);
+        return mCounty;
     }
 
     //from zip code get data
@@ -232,27 +307,127 @@ public class CongressionalView extends AppCompatActivity {
             });
 
             Log.d(TAG, "end");
-
-            String picUrl = "https://theunitedstates.io/images/congress/"; //[size]/[bioguide].jpg"
-            //new getPhoto().execute(picUrl);
-
         }
     }
 
-//    public class getPhoto extends AsyncTask<String, Void, ArrayList<Candidate>> {
-//        private static final String TAG = "@>@>@>@>";
-//
-//        @Override
-//        protected ArrayList<Candidate> doInBackground(String... params) {
-//            Log.d(TAG, "params: " + params[0]);
-//
-//            String size = "225x275";
-//
-//
-//
-//
-//            return null;
-//        }
-//    }
+    public class RetrieveWatchData extends AsyncTask<String, Void, String> {
+        private static final String TAG = "@>@>@>@>";
+
+        StringBuilder sb = new StringBuilder();
+        String data = null;
+
+        @Override
+        protected String doInBackground(String... params) {
+            Log.d(TAG, "params 0: " + params[0] + " params 1: " + params[1]);
+
+            JSONParser jsonParser = new JSONParser();
+
+            if(params[1].equals("sun")) {
+                JSONObject jsonObject = jsonParser.getJSONFromUrl(params[0]);
+
+                try {
+                    JSONArray arr = jsonObject.getJSONArray("results");
+
+                    for (int i = 0; i < arr.length(); i++) {
+                        //Log.d(TAG, "iteration " + i);
+                        JSONObject json = arr.getJSONObject(i);
+
+                        //String chamber = json.getString("chamber");
+                        String first_name = json.getString("first_name");
+                        String last_name = json.getString("last_name");
+                        String name = first_name + " " + last_name;
+                        String party = json.getString("party"); //D or R
+                        String state = json.getString("state");
+
+                        if (party.equals("D")) {
+                            party = "Democrat";
+                        } else {
+                            party = "Republican";
+                        }
+
+                        //Log.d(TAG, "name: " + name + ", party: " + party + ", state: " + state);
+                        sb.append(name + "@" + party + "@" + state);
+
+                        if (i != arr.length())
+                            sb.append("@");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.d(TAG, e.toString());
+                    Log.d(TAG, "getting data for watch");
+                }
+            } else {
+                JSONObject jsonObject = jsonParser.getJSONFromUrl(params[0]);
+
+
+                Log.d(TAG, "Google gets zip Code: " + zipCode);
+                Log.d(TAG, "in google");
+
+                try {
+                    //feel like something is weird with this array
+                    JSONArray arr = jsonObject.getJSONArray("results");
+
+                    String county = null;
+                    String type = null;
+
+                    for (int i = 0; i < arr.length(); i++) {
+
+                        Log.d(TAG, "iteration i: " + i);
+
+                        JSONObject json = arr.getJSONObject(i);
+                        JSONArray jArr = json.getJSONArray("address_components");
+
+                        Log.d(TAG, "jARR length: " + jArr.length());
+
+                        for(int j=0; j<jArr.length(); j++){
+                            Log.d(TAG, "iteration j: " + j);
+
+                            JSONObject o = jArr.getJSONObject(j);
+
+                            String long_name = o.getString("long_name");
+                            Log.d(TAG, long_name);
+
+                            type = o.getString("types");
+                            Log.d(TAG, "type: " + type);
+
+                            if((type.equals("[\"administrative_area_level_2\"]") ||
+                                    (type.equals("[\"administrative_area_level_2\",\"political\"]")))) {
+                                county = o.getString("long_name");
+                                Log.d(TAG, "county: " + county);
+                                //break;
+                            }
+                        }
+
+                        if(county != null && ((type.equals("[\"administrative_area_level_2\"]") ||
+                                (type.equals("[\"administrative_area_level_2\",\"political\"]"))))){
+                            break;
+                        }
+                    }
+
+                    Log.d(TAG, "outside");
+                    Log.d(TAG, "county: " + county);
+
+                    sb.append(county);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.d(TAG, e.toString());
+                    Log.d(TAG, "getting data from google");
+                }
+            }
+
+            data = sb.toString();
+
+            Log.d(TAG, "data: " + data);
+
+            return data;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d(TAG, "result received ");
+        }
+    }
+
 }
 

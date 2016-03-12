@@ -23,7 +23,7 @@ public class WatchToPhoneService extends Service {
 
     Boolean isZipCode = Boolean.FALSE;
     private String name;
-    private String sZipCode;
+    private String myZipCode;
 
     private static final String TAG = "@>@>@>@>";
     private GoogleApiClient mWatchApiClient;
@@ -57,15 +57,15 @@ public class WatchToPhoneService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Bundle extras = intent.getExtras();
 
-        Log.d(TAG, "WtoT: on start command");
+        Log.d(TAG, "WtoP: on start command");
 
         String thing = extras.getString("nameOrZip");
 
         try {
-            int iZipCode = Integer.parseInt(thing);
-            sZipCode = isZipCode.toString();
+            int intZipCode = Integer.parseInt(thing);
+            myZipCode = "" + intZipCode;
             isZipCode = Boolean.TRUE;
-            Log.d(TAG, "is it getting through? " + sZipCode);
+            Log.d(TAG, "is it getting through? " + myZipCode);
         } catch (NumberFormatException e) {
             name = thing;
             isZipCode = Boolean.FALSE;
@@ -77,7 +77,7 @@ public class WatchToPhoneService extends Service {
             public void run() {
                 mWatchApiClient.connect();
                 if(isZipCode){
-                    sendMessage("/send_zipcode", sZipCode);
+                    sendMessage("/send_zipcode", myZipCode);
                 } else {
                     sendMessage("/send_name", name);
                 }
@@ -85,7 +85,7 @@ public class WatchToPhoneService extends Service {
             }
         }).start();
 
-        //_this.stopSelf();
+
         return START_STICKY;
     }
 

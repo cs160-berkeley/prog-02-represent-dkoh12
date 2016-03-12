@@ -17,7 +17,6 @@ public class PhoneListenerService extends WearableListenerService {
     private static final String NAME = "/send_name";
     private static final String ZIPCODE = "/send_zipcode";
 
-    //Log.wtf(TAG, "sucker");
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
@@ -34,6 +33,8 @@ public class PhoneListenerService extends WearableListenerService {
 
         } else if( messageEvent.getPath().equalsIgnoreCase(ZIPCODE) ) {
             String zipcode = new String(messageEvent.getData(), StandardCharsets.UTF_8);
+
+            Log.d(TAG, "send zipcode from PListener: " + zipcode);
 
             Intent i = new Intent(this, CongressionalView.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
