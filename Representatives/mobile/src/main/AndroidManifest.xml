@@ -50,10 +50,6 @@
             </intent-filter>
         </service>
 
-
-
-
-
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="ed9223f329783df375577ec84063f2ef45c98cc5" />
